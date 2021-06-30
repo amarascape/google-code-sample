@@ -123,8 +123,26 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Continues a currently paused video.
+   * If the currently playing video is not paused, display a
+   * warning message and do nothing.
+   * If no video is playing at all, also display a warning message
+   * and do nothing.
+   */
   public void continueVideo() {
-    System.out.println("continueVideo needs implementation");
+    if(videoPlaying.length() > 0){
+      if(videoPaused){
+        videoPaused = false;
+        System.out.println("Continuing video: " + videoPlaying);
+      }
+      else{
+        System.out.println("Cannot continue video: Video is not paused");
+      }
+    }
+    else{
+      System.out.println("Cannot continue video: No video is currently playing");
+    }
   }
 
   public void showPlaying() {
