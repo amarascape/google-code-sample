@@ -257,13 +257,12 @@ public class VideoPlayer {
         if (playlist != null) {
             ArrayList<Video> videos = playlist.getVideos();
             System.out.println("Showing playlist: " + playlistName);
-            if (videos.isEmpty()){
-              System.out.println("No videos here yet");
-            }
-            else{
-              for (Video video : videos) {
-                System.out.println(video);
-              }
+            if (videos.isEmpty()) {
+                System.out.println("No videos here yet");
+            } else {
+                for (Video video : videos) {
+                    System.out.println(video);
+                }
             }
         } else {
             System.out.println("Cannot show playlist " + playlistName + ": Playlist does not exist");
@@ -316,24 +315,55 @@ public class VideoPlayer {
         }
     }
 
-  /**
-   * Delete the specified playlist.
-   * Display a warning if the playlist doesn’t exist
-   *
-   * @param playlistName
-   */
-  public void deletePlaylist(String playlistName) {
-    Playlist playlist = playlistManager.getPlaylist(playlistName);
-    if (playlist != null) {
-      playlistManager.deletePlaylist(playlist);
-      System.out.println("Deleted playlist: " + playlistName);
-    } else {
-      System.out.println("Cannot delete playlist " + playlistName + ": Playlist does not exist");
+    /**
+     * Delete the specified playlist.
+     * Display a warning if the playlist doesn’t exist
+     *
+     * @param playlistName
+     */
+    public void deletePlaylist(String playlistName) {
+        Playlist playlist = playlistManager.getPlaylist(playlistName);
+        if (playlist != null) {
+            playlistManager.deletePlaylist(playlist);
+            System.out.println("Deleted playlist: " + playlistName);
+        } else {
+            System.out.println("Cannot delete playlist " + playlistName + ": Playlist does not exist");
+        }
     }
-  }
 
+    /**
+     *
+     * @param searchTerm
+     */
     public void searchVideos(String searchTerm) {
-        System.out.println("searchVideos needs implementation");
+        LibrarySearcher librarySearcher = new LibrarySearcher();
+        ArrayList<Video> videos = librarySearcher.searchByTitle(searchTerm);
+        if(videos.isEmpty()) {
+            System.out.println("No search results for " + searchTerm);
+        }
+        else{
+            sortVideosByTitle(videos);
+            System.out.println("Here are the results for " + searchTerm + ":");
+            StringBuilder stringBuilder = new StringBuilder();;
+            for(int i = 0; i < videos.size(); i++){
+                stringBuilder.setLength(0);
+                stringBuilder.append(i+1);
+                stringBuilder.append(") ");
+                stringBuilder.append(videos.get(i));
+                System.out.println(stringBuilder.toString());
+            }
+            System.out.println("Would you like to play any of the above? If yes, specify the number of the video.");
+            System.out.println("If your answer is not a valid number, we will assume it's a no.");
+            Scanner scanner = new Scanner(System.in);
+            int videoNumber = Integer.parseInt(scanner.nextLine());
+            if(videoNumber <= videos.size()){
+                Video chosenVideo = videos.get(videoNumber - 1);
+                playVideo(chosenVideo.getVideoId());
+            }
+            else{
+                System.out.println("Nope!");
+            }
+        }
     }
 
     public void searchVideosWithTag(String videoTag) {
