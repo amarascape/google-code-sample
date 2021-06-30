@@ -83,6 +83,7 @@ public class VideoPlayer {
     else{
       System.out.println("Stopping video: " + videoPlaying);
       videoPlaying = "";
+      videoPaused = false;
     }
   }
 
@@ -96,6 +97,9 @@ public class VideoPlayer {
     if(videos.size() > 0){
       Random rand = new Random();
       int randIndex = rand.nextInt(videos.size());
+      if(videoPlaying.length() > 0) {
+        stopVideo();
+      }
       playVideo(videos.get(randIndex).getVideoId());
     }
     else{
@@ -125,10 +129,8 @@ public class VideoPlayer {
 
   /**
    * Continues a currently paused video.
-   * If the currently playing video is not paused, display a
-   * warning message and do nothing.
-   * If no video is playing at all, also display a warning message
-   * and do nothing.
+   * If the currently playing video is not paused, display a warning message and do nothing.
+   * If no video is playing at all, also display a warning message and do nothing.
    */
   public void continueVideo() {
     if(videoPlaying.length() > 0){
@@ -145,8 +147,30 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Displays the title, video_id, video tags and paused status of the video that is currently playing.
+   * If no video is currently playing, display a message.
+   */
   public void showPlaying() {
-    System.out.println("showPlaying needs implementation");
+    if(videoPlaying.length() > 0){
+      Video video = null;
+      List<Video> videos = videoLibrary.getVideos();
+      for(Video v: videos){
+        if(v.getTitle().equalsIgnoreCase(videoPlaying)){
+          video = v;
+        }
+      }
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("Currently playing: ");
+      stringBuilder.append(video);
+      if(videoPaused) {
+        stringBuilder.append(" - PAUSED");
+      }
+      System.out.println(stringBuilder.toString());
+    }
+    else{
+      System.out.println("No video is currently playing");
+    }
   }
 
   public void createPlaylist(String playlistName) {

@@ -1,5 +1,6 @@
 package com.google;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +43,17 @@ class Video {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append(title + " ");
     stringBuilder.append("(" + videoId + ") ");
-    stringBuilder.append(tags);
+    if(tags.size() > 0) {
+      stringBuilder.append("[");
+      for (String tag : tags) {
+        stringBuilder.append(tag + " ");
+      }
+      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+      stringBuilder.append("]");
+    }
+    else{
+      stringBuilder.append("[]");
+    }
     return stringBuilder.toString();
   }
 }
