@@ -9,11 +9,15 @@ public class VideoPlayer {
   private String videoPlaying;
   private boolean videoPaused;
 
+  private ArrayList<Playlist> playlists;
+
   public VideoPlayer() {
     this.videoLibrary = new VideoLibrary();
 
     videoPlaying = "";
     videoPaused = false;
+
+    playlists = new ArrayList<>();
   }
 
   public void numberOfVideos() {
@@ -36,7 +40,6 @@ public class VideoPlayer {
     else{
       System.out.println("No videos available");
     }
-
   }
 
   /**
@@ -173,8 +176,34 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Create a new (empty) playlist with a unique name.
+   * If a playlist with the same name already exists,
+   * display a warning to the user and do nothing
+   * @param playlistName
+   */
   public void createPlaylist(String playlistName) {
-    System.out.println("createPlaylist needs implementation");
+    if(playlistNameAvailable(playlistName)){
+      playlists.add(new Playlist(playlistName));
+      System.out.println("Successfully created new playlist: " + playlistName);
+    }
+    else{
+      System.out.println("Cannot create playlist: A playlist with the same name already exists");
+    }
+  }
+
+  /**
+   * @param playlistName
+   * @return true if playlist name is available (not in use),
+   * false otherwise
+   */
+  private Boolean playlistNameAvailable(String playlistName) {
+    for(Playlist playlist: playlists){
+      if(playlist.getName().equalsIgnoreCase(playlistName)){
+        return false;
+      }
+    }
+    return true;
   }
 
   public void addVideoToPlaylist(String playlistName, String videoId) {
