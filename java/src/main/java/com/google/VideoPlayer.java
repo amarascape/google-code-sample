@@ -29,10 +29,10 @@ public class VideoPlayer {
    * The videos should be shown in lexicographical order by title. If there are no tags available, display empty brackets.
    */
   public void showAllVideos() {
-    ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
+    List<Video> videos = videoLibrary.getVideos();
     if(videos.size() > 0){
       System.out.println("Here's a list of all available videos:");
-      Collections.sort(videos, new VideoTitleComparator());
+      sortVideosByTitle(videos);
       for(Video video: videos){
         System.out.println(video);
       }
@@ -43,16 +43,15 @@ public class VideoPlayer {
   }
 
   /**
-   * Comparator class to sort ArrayList of Videos by title alphabetically
-   * Used in the showAllVideos() method
+   * Sorts a list of Video objects by title
    */
-  class VideoTitleComparator implements Comparator {
-    public int compare(Object o1,Object o2){
-      Video video1=(Video)o1;
-      Video video2=(Video)o2;
-
-      return video1.getTitle().compareTo(video2.getTitle());
-    }
+  public void sortVideosByTitle(List<Video> videos) {
+    Collections.sort(videos, new Comparator<Video>() {
+      @Override
+      public int compare(Video o1, Video o2) {
+        return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
+      }
+    });
   }
 
   /**
@@ -242,7 +241,30 @@ public class VideoPlayer {
   }
 
   public void showAllPlaylists() {
-    System.out.println("showAllPlaylists needs implementation");
+    if(playlists.size() > 0){
+      System.out.println("Showing all playlists:");
+      sortPlaylistsByName(playlists);
+      for(Playlist playlist: playlists){
+        System.out.println(playlist.getName());
+      }
+    }
+    else{
+      System.out.println("No playlists exist yet");
+    }
+  }
+
+  /**
+   * Sorts a list of Playlist objects by Name
+   *
+   * @param playlists an ArrayList of Playlist objects
+   */
+  public void sortPlaylistsByName(ArrayList<Playlist> playlists) {
+    Collections.sort(playlists, new Comparator<Playlist>() {
+      @Override
+      public int compare(Playlist o1, Playlist o2) {
+        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+      }
+    });
   }
 
   public void showPlaylist(String playlistName) {
