@@ -326,8 +326,32 @@ public class VideoPlayer {
     return null;
   }
 
+  /**
+   * Remove the specified video from the specified playlist.
+   * If either does not exist, display a relevant warning message.
+   * In all cases, check for the playlist existence first: This means if both don’t exist,
+   * you’ll be printing the message that the playlist doesn’t exist.
+   * If the video is not in the playlist to begin with, display a warning message and do nothing
+   * @param playlistName
+   * @param videoId
+   */
   public void removeFromPlaylist(String playlistName, String videoId) {
-    System.out.println("removeFromPlaylist needs implementation");
+    if (playlistExists(playlistName)) {
+      Playlist playlist = getPlaylist(playlistName);
+      if (videoLibrary.getVideo(videoId) == null) {
+        System.out.println("Cannot remove video from " + playlistName + ": Video does not exist");
+      } else {
+        Video video = playlist.getVideo(videoId);
+        if (video != null) {
+          playlist.removeVideo(video);
+          System.out.println("Removed video from " + playlistName + ": " + video.getTitle());
+        } else {
+          System.out.println("Cannot remove video from " + playlistName + ": Video is not in playlist");
+        }
+      }
+    } else {
+      System.out.println("Cannot remove video from " + playlistName + ": Playlist does not exist");
+    }
   }
 
   public void clearPlaylist(String playlistName) {

@@ -35,6 +35,14 @@ public class Playlist {
     }
 
     /**
+     * Removes a Video object from the playlist
+     * @param video
+     */
+    public void removeVideo(Video video) {
+        videos.remove(video);
+    }
+
+    /**
      *
      * @param video
      * @return true if the playlist already contains specified video,
