@@ -9,8 +9,12 @@ public class VideoPlayer {
 
   private final VideoLibrary videoLibrary;
 
+  private String videoPlaying;
+
   public VideoPlayer() {
     this.videoLibrary = new VideoLibrary();
+
+    videoPlaying = "";
   }
 
   public void numberOfVideos() {
@@ -29,6 +33,10 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Comparator class to sort ArrayList of Videos by title alphabetically
+   * Used in the showAllVideos() method
+   */
   class VideoTitleComparator implements Comparator {
     public int compare(Object o1,Object o2){
       Video video1=(Video)o1;
@@ -39,7 +47,28 @@ public class VideoPlayer {
   }
 
   public void playVideo(String videoId) {
-    System.out.println("playVideo needs implementation");
+    if((videoLibrary.getVideo(videoId)) == null){
+      System.out.println("Cannot play video: Video does not exist");
+    }
+    else{
+      stopCurrentVideo();
+      videoPlaying = videoLibrary.getVideo(videoId).getTitle();
+      System.out.println("Playing video: " + videoPlaying);
+    }
+  }
+
+  /**
+   * Checks if there is currently a video playing.
+   * If true, displays a note that this video will be
+   * stopped.
+   */
+  private void stopCurrentVideo(){
+    if(videoPlaying.length() == 0){
+      //there is no video currently playing
+    }
+    else{
+      System.out.println("Stopping video: " + videoPlaying);
+    }
   }
 
   public void stopVideo() {
