@@ -332,7 +332,12 @@ public class VideoPlayer {
     }
 
     /**
+     * Display all videos in the library whose titles contain the specified search term.
      *
+     * Display a list in lexicographical order (by title) and ask the user if they’d like to play one of the
+     * videos.
+     *
+     * If there are no search results, display a nice message.
      * @param searchTerm
      */
     public void searchVideos(String searchTerm) {
@@ -352,22 +357,68 @@ public class VideoPlayer {
                 stringBuilder.append(videos.get(i));
                 System.out.println(stringBuilder.toString());
             }
-            System.out.println("Would you like to play any of the above? If yes, specify the number of the video.");
-            System.out.println("If your answer is not a valid number, we will assume it's a no.");
-            Scanner scanner = new Scanner(System.in);
-            int videoNumber = Integer.parseInt(scanner.nextLine());
-            if(videoNumber <= videos.size()){
-                Video chosenVideo = videos.get(videoNumber - 1);
-                playVideo(chosenVideo.getVideoId());
-            }
-            else{
-                System.out.println("Nope!");
-            }
+            playFromSearch(videos);
         }
     }
 
+    /**
+     * Display all videos in the library whose titles contain the specified search term.
+     *
+     * Display a list in lexicographical order (by title) and ask the user if they’d like to play one of the
+     * videos.
+     *
+     * If there are no search results, display a nice message.
+     * @param videoTag
+     */
     public void searchVideosWithTag(String videoTag) {
-        System.out.println("searchVideosWithTag needs implementation");
+        LibrarySearcher librarySearcher = new LibrarySearcher();
+        ArrayList<Video> videos = librarySearcher.searchByTag(videoTag);
+        if(videos.isEmpty() || !videoTag.contains("#")) {
+            System.out.println("No search results for " + videoTag);
+        }
+        else{
+            sortVideosByTitle(videos);
+            System.out.println("Here are the results for " + videoTag + ":");
+            StringBuilder stringBuilder = new StringBuilder();;
+            for(int i = 0; i < videos.size(); i++){
+                stringBuilder.setLength(0);
+                stringBuilder.append(i+1);
+                stringBuilder.append(") ");
+                stringBuilder.append(videos.get(i));
+                System.out.println(stringBuilder.toString());
+            }
+            playFromSearch(videos);
+        }
+    }
+
+    /**
+     * Gives the user a choice to play a video from a search result
+     *
+     * Read in the answer from the standard input, then play that video,
+     * otherwise assume the answer is no and do nothing.
+     * @param videos
+     */
+    public void playFromSearch(ArrayList<Video> videos){
+        System.out.println("Would you like to play any of the above? If yes, specify the number of the video.");
+        System.out.println("If your answer is not a valid number, we will assume it's a no.");
+        ArrayList<Integer> validChoices = new ArrayList<>();
+        for(int i = 0; i < videos.size(); i++) {
+            validChoices.add(i + 1);
+        }
+        Scanner scanner = new Scanner(System.in);
+        Integer videoNumber = null;
+        try {
+            videoNumber = Integer.valueOf(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return;
+        }
+        if(validChoices.contains(videoNumber)){
+            Video chosenVideo = videos.get(videoNumber - 1);
+            playVideo(chosenVideo.getVideoId());
+        }
+        else{
+            System.out.println("Nope!");
+        }
     }
 
     public void flagVideo(String videoId) {
