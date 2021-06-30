@@ -1,9 +1,6 @@
 package com.google;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class VideoPlayer {
 
@@ -27,10 +24,17 @@ public class VideoPlayer {
    */
   public void showAllVideos() {
     ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
-    Collections.sort(videos, new VideoTitleComparator());
-    for(Video video: videos){
-      System.out.println(video);
+    if(videos.size() > 0){
+      System.out.println("Here's a list of all available videos:");
+      Collections.sort(videos, new VideoTitleComparator());
+      for(Video video: videos){
+        System.out.println(video);
+      }
     }
+    else{
+      System.out.println("No videos available");
+    }
+
   }
 
   /**
@@ -80,8 +84,22 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Play a random video. If a video is currently playing, display a note that this video will be stopped,
+   * even if the same video is already playing.
+   * If there are no videos available, print out “No videos available”
+   */
   public void playRandomVideo() {
-    System.out.println("playRandomVideo needs implementation");
+    ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
+    if(videos.size() > 0){
+      Random rand = new Random();
+      int randIndex = rand.nextInt(videos.size());
+      playVideo(videos.get(randIndex).getVideoId());
+    }
+    else{
+      System.out.println("No videos available");
+    }
+
   }
 
   public void pauseVideo() {
