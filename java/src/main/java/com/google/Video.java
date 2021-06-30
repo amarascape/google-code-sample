@@ -30,4 +30,19 @@ class Video {
   List<String> getTags() {
     return tags;
   }
+
+  /**
+   * Overrides the toString method to show videos in the format:
+   * title (video_id) [tags]
+   * Used in the SHOW_ALL_VIDEOS command
+   * @return
+   */
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(title + " ");
+    stringBuilder.append("(" + videoId + ") ");
+    stringBuilder.append(tags);
+    return stringBuilder.toString();
+  }
 }
