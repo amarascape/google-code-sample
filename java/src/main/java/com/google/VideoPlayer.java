@@ -202,7 +202,7 @@ public class VideoPlayer {
                 if (playlist.addVideo(videoLibrary.getVideo(videoId))) {
                     System.out.println("Added video to " + playlistName + ": " + videoLibrary.getVideo(videoId).getTitle());
                 } else {
-                    System.out.println("Cannot add " + videoLibrary.getVideo(videoId).getTitle() + " to " + playlistName + ": Video already exists in the playlist");
+                    System.out.println("Cannot add video to " + playlistName + ": Video already added");
                 }
             } else {
                 System.out.println("Cannot add video to " + playlistName + ": Video does not exist");
@@ -257,12 +257,13 @@ public class VideoPlayer {
         if (playlist != null) {
             ArrayList<Video> videos = playlist.getVideos();
             System.out.println("Showing playlist: " + playlistName);
-            if (videos.size() > 0) {
-                for (Video video : videos) {
-                    System.out.println(video);
-                }
-            } else {
-                System.out.println("No videos here yet");
+            if (videos.isEmpty()){
+              System.out.println("No videos here yet");
+            }
+            else{
+              for (Video video : videos) {
+                System.out.println(video);
+              }
             }
         } else {
             System.out.println("Cannot show playlist " + playlistName + ": Playlist does not exist");
