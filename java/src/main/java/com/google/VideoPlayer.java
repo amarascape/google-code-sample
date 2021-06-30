@@ -7,11 +7,13 @@ public class VideoPlayer {
   private final VideoLibrary videoLibrary;
 
   private String videoPlaying;
+  private boolean videoPaused;
 
   public VideoPlayer() {
     this.videoLibrary = new VideoLibrary();
 
     videoPlaying = "";
+    videoPaused = false;
   }
 
   public void numberOfVideos() {
@@ -99,11 +101,26 @@ public class VideoPlayer {
     else{
       System.out.println("No videos available");
     }
-
   }
 
+  /**
+   * Pause the current playing video.
+   * If a video is already paused, display a warning message and do nothing.
+   * Equally, If no video is currently playing, display a warning message and do nothing.
+   */
   public void pauseVideo() {
-    System.out.println("pauseVideo needs implementation");
+    if(videoPlaying.length() > 0){
+      if(videoPaused){
+        System.out.println("Video already paused: " + videoPlaying);
+      }
+      else{
+        videoPaused = true;
+        System.out.println("Pausing video: " + videoPlaying);
+      }
+    }
+    else{
+      System.out.println("Cannot pause video: No video is currently playing");
+    }
   }
 
   public void continueVideo() {
