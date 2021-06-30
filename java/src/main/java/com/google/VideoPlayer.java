@@ -315,9 +315,21 @@ public class VideoPlayer {
         }
     }
 
-    public void deletePlaylist(String playlistName) {
-        System.out.println("deletePlaylist needs implementation");
+  /**
+   * Delete the specified playlist.
+   * Display a warning if the playlist doesn’t exist
+   *
+   * @param playlistName
+   */
+  public void deletePlaylist(String playlistName) {
+    Playlist playlist = playlistManager.getPlaylist(playlistName);
+    if (playlist != null) {
+      playlistManager.deletePlaylist(playlist);
+      System.out.println("Deleted playlist: " + playlistName);
+    } else {
+      System.out.println("Cannot delete playlist " + playlistName + ": Playlist does not exist");
     }
+  }
 
     public void searchVideos(String searchTerm) {
         System.out.println("searchVideos needs implementation");

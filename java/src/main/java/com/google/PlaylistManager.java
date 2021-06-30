@@ -39,7 +39,7 @@ public class PlaylistManager {
     /**
      *
      * @param playlistName
-     * @return the specified PLaylist object if found, null otherwise
+     * @return the specified Playlist object if found, null otherwise
      */
     public Playlist getPlaylist(String playlistName) {
         for (Playlist playlist : playlists) {
@@ -48,6 +48,14 @@ public class PlaylistManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Delete a playlist
+     * @param playlist
+     */
+    public void deletePlaylist(Playlist playlist) {
+        playlists.remove(playlist);
     }
 
     public ArrayList<Playlist> getPlaylists() {
