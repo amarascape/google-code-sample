@@ -417,7 +417,7 @@ public class VideoPlayer {
             playVideo(chosenVideo.getVideoId());
         }
         else{
-            System.out.println("Nope!");
+            //System.out.println("Nope!");
         }
     }
 
