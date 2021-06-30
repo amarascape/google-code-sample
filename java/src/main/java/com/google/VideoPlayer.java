@@ -206,8 +206,39 @@ public class VideoPlayer {
     return true;
   }
 
+  /**
+   * Adds the specified video to a playlist.
+   * If either the video or the playlist don’t exist, show a warning message.
+   * If both don’t exist, display the warning message for the playlist first.
+   * The playlist should not allow duplicate videos and display a warning message
+   * if a video is already present in the playlist.
+   * As the name is not case sensitive, always use the same case in the response as the user
+   * entered in their command.
+   * @param playlistName
+   * @param videoId
+   */
   public void addVideoToPlaylist(String playlistName, String videoId) {
-    System.out.println("addVideoToPlaylist needs implementation");
+    Playlist playlist = null;
+    for (Playlist p : playlists) {
+      if (p.getName().equalsIgnoreCase(playlistName)) {
+        playlist = p;
+      }
+    }
+
+    if (playlist != null) {
+      if ((videoLibrary.getVideo(videoId)) != null) {
+        if (playlist.addVideo(videoLibrary.getVideo(videoId))) {
+          System.out.println("Added video to " + playlistName + ": " + videoLibrary.getVideo(videoId).getTitle());
+        }
+        else{
+          System.out.println("Cannot add " + videoLibrary.getVideo(videoId).getTitle() + " to " + playlistName + ": Video already exists in the playlist");
+        }
+      } else {
+        System.out.println("Cannot add video to " + playlistName + ": Video does not exist");
+      }
+    } else {
+      System.out.println("Cannot add video to " + playlistName + ": Playlist does not exist");
+    }
   }
 
   public void showAllPlaylists() {

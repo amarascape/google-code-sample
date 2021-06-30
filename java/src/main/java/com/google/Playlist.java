@@ -20,7 +20,46 @@ public class Playlist {
         return videos;
     }
 
-    public void addVideo(Video video) {
+    /**
+     *
+     * @param video
+     * @return trus is video added sucessfully,
+     * false otherwise (video already exists)
+     */
+    public Boolean addVideo(Video video) {
+        if(playlistContainsVideo(video)){
+            return false;
+        }
         videos.add(video);
+        return true;
+    }
+
+    /**
+     *
+     * @param video
+     * @return true if the playlist already contains specified video,
+     * false otherwise
+     */
+    private Boolean playlistContainsVideo(Video video){
+        for(Video v: videos){
+            if(v.equals(video)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param videoId
+     * @return the specified Video in the playlist,
+     * null if video is not in the playlist
+     */
+    public Video getVideo(String videoId) {
+        for(Video video: videos){
+            if(video.getVideoId().equalsIgnoreCase(videoId)){
+                return video;
+            }
+        }
+        return null;
     }
 }
