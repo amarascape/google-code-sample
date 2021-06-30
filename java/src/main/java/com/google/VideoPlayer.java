@@ -46,33 +46,38 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Play the specified video. If a video is currently playing, display a note that this video will be
+   * stopped, even if the same video is already playing. If the video doesn’t exist, display a warning
+   * message (and don’t stop the currently playing video).
+   * @param videoId the specified video
+   */
   public void playVideo(String videoId) {
     if((videoLibrary.getVideo(videoId)) == null){
       System.out.println("Cannot play video: Video does not exist");
     }
     else{
-      stopCurrentVideo();
+      if(videoPlaying.length() > 0){
+        stopVideo();
+      }
       videoPlaying = videoLibrary.getVideo(videoId).getTitle();
       System.out.println("Playing video: " + videoPlaying);
     }
   }
 
   /**
-   * Checks if there is currently a video playing.
-   * If true, displays a note that this video will be
-   * stopped.
+   * Stop the current playing video.
+   * If no video is currently playing, display a warning message
+   * “Cannot stop video: No video is currently playing” and do nothing.
    */
-  private void stopCurrentVideo(){
+  public void stopVideo() {
     if(videoPlaying.length() == 0){
-      //there is no video currently playing
+      System.out.println("Cannot stop video: No video is currently playing");
     }
     else{
       System.out.println("Stopping video: " + videoPlaying);
+      videoPlaying = "";
     }
-  }
-
-  public void stopVideo() {
-    System.out.println("stopVideo needs implementation");
   }
 
   public void playRandomVideo() {
