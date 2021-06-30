@@ -240,11 +240,17 @@ public class VideoPlayer {
     }
   }
 
+  /**
+   * Show all the available playlists (name only). I
+   * f the list is empty, display the user friendly message “No playlists exist yet”.
+   * The playlists should be shown in lexicographical order by playlist name.
+   */
   public void showAllPlaylists() {
-    if(playlists.size() > 0){
+    ArrayList<Playlist> p = new ArrayList<>(playlists);
+    if(p.size() > 0){
       System.out.println("Showing all playlists:");
-      sortPlaylistsByName(playlists);
-      for(Playlist playlist: playlists){
+      sortPlaylistsByName(p);
+      for(Playlist playlist: p){
         System.out.println(playlist.getName());
       }
     }
@@ -267,8 +273,57 @@ public class VideoPlayer {
     });
   }
 
+  /**
+   * Show all the videos in the specified playlist in the following format: “title (video_id) [tags]”.
+   * If the playlist doesn’t exist, display a warning message.
+   * If the playlist is empty, display “No videos here yet” instead of a video list.
+   * The videos should be listed in the same order they were added.
+   * @param playlistName
+   */
   public void showPlaylist(String playlistName) {
-    System.out.println("showPlaylist needs implementation");
+    if(playlistExists(playlistName)){
+      Playlist playlist = getPlaylist(playlistName);
+      ArrayList<Video> videos = playlist.getVideos();
+      System.out.println("Showing playlist: " + playlistName);
+      if(videos.size() > 0){
+        for(Video video: videos){
+          System.out.println(video);
+        }
+      }
+      else{
+        System.out.println("No videos here yet");
+      }
+    }
+    else{
+      System.out.println("Cannot show playlist " + playlistName + ": Playlist does not exist");
+    }
+  }
+
+  /**
+   * @param playlistName
+   * @return true if the playlist exists, false otherwise
+   */
+  private Boolean playlistExists(String playlistName) {
+    for(Playlist playlist: playlists){
+      if(playlist.getName().equalsIgnoreCase(playlistName)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   *
+   * @param playlistName
+   * @return the specified playlist if found, null otherwise
+   */
+  private Playlist getPlaylist(String playlistName) {
+    for(Playlist playlist: playlists){
+      if(playlist.getName().equalsIgnoreCase(playlistName)){
+        return playlist;
+      }
+    }
+    return null;
   }
 
   public void removeFromPlaylist(String playlistName, String videoId) {
