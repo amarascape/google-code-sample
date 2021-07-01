@@ -20,7 +20,7 @@ public class LibrarySearcher {
         ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
         ArrayList<Video> searchResults = new ArrayList<>();
         for(Video video: videos){
-            if(video.getTitle().toLowerCase().contains(searchTerm.toLowerCase().trim())){
+            if((video.getTitle().toLowerCase().contains(searchTerm.toLowerCase()))){
                 searchResults.add(video);
             }
         }
@@ -49,5 +49,22 @@ public class LibrarySearcher {
             }
         }
         return searchResults;
+    }
+
+    /**
+     * Removes all flagged videos from a search list of videos
+     * @param videos
+     * @return a list of videos, none are flagged
+     */
+    public ArrayList<Video> removedFlaggedVideos(ArrayList<Video> videos){
+        ArrayList<Video> playableVideos = new ArrayList<>();
+
+        for(Video video: videos){
+            if(!video.isFlagged()){
+                playableVideos.add(video);
+            }
+        }
+
+        return playableVideos;
     }
 }

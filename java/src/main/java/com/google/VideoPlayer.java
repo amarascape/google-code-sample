@@ -11,6 +11,8 @@ public class VideoPlayer {
 
     private PlaylistManager playlistManager;
 
+    private LibrarySearcher librarySearcher;
+
     public VideoPlayer() {
         this.videoLibrary = new VideoLibrary();
 
@@ -18,6 +20,8 @@ public class VideoPlayer {
         videoPaused = false;
 
         playlistManager = new PlaylistManager();
+
+        librarySearcher = new LibrarySearcher();
     }
 
     public void numberOfVideos() {
@@ -61,14 +65,21 @@ public class VideoPlayer {
      * @param videoId the specified video
      */
     public void playVideo(String videoId) {
-        if ((videoLibrary.getVideo(videoId)) == null) {
+        Video video = videoLibrary.getVideo(videoId);
+        if (video == null) {
             System.out.println("Cannot play video: Video does not exist");
         } else {
-            if (videoPlaying.length() > 0) {
-                stopVideo();
+            if(video.isFlagged()){
+                System.out.println("Cannot play video: Video is currently flagged (reason: " +
+                        video.getFlagReason() + ")");
             }
-            videoPlaying = videoLibrary.getVideo(videoId).getTitle();
-            System.out.println("Playing video: " + videoPlaying);
+            else {
+                if (videoPlaying.length() > 0) {
+                    stopVideo();
+                }
+                videoPlaying = video.getTitle();
+                System.out.println("Playing video: " + videoPlaying);
+            }
         }
     }
 
@@ -94,15 +105,23 @@ public class VideoPlayer {
      */
     public void playRandomVideo() {
         ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
-        if (videos.isEmpty()) {
+        ArrayList<Video> playableVideos = new ArrayList<>();
+
+        for(Video video: videos){
+            if(!video.isFlagged()){
+                playableVideos.add(video);
+            }
+        }
+
+        if (playableVideos.isEmpty()) {
             System.out.println("No videos available");
         } else {
             Random rand = new Random();
-            int randIndex = rand.nextInt(videos.size());
+            int randIndex = rand.nextInt(playableVideos.size());
             if (videoPlaying.length() > 0) {
                 stopVideo();
             }
-            playVideo(videos.get(randIndex).getVideoId());
+            playVideo(playableVideos.get(randIndex).getVideoId());
         }
     }
 
@@ -196,19 +215,31 @@ public class VideoPlayer {
      */
     public void addVideoToPlaylist(String playlistName, String videoId) {
         Playlist playlist = playlistManager.getPlaylist(playlistName);
-
-        if (playlist != null) {
-            if ((videoLibrary.getVideo(videoId)) != null) {
-                if (playlist.addVideo(videoLibrary.getVideo(videoId))) {
-                    System.out.println("Added video to " + playlistName + ": " + videoLibrary.getVideo(videoId).getTitle());
-                } else {
-                    System.out.println("Cannot add video to " + playlistName + ": Video already added");
-                }
-            } else {
+        if(playlist == null){
+            System.out.println("Cannot add video to " + playlistName + ": Playlist does not exist");
+        }
+        else{
+            Video video = videoLibrary.getVideo(videoId);
+            if(video == null){
                 System.out.println("Cannot add video to " + playlistName + ": Video does not exist");
             }
-        } else {
-            System.out.println("Cannot add video to " + playlistName + ": Playlist does not exist");
+            else{
+                if(video.isFlagged()){
+                    System.out.println("Cannot add video to " + playlistName
+                            + ": Video is currently flagged (reason: " +
+                            video.getFlagReason() + ")");
+                }
+                else{
+                    if(playlist.addVideo(video)){
+                        System.out.println("Added video to " + playlistName + ": "
+                                + video.getTitle());
+                    }
+                    else{
+                        System.out.println("Cannot add video to " + playlistName
+                                + ": Video already added");
+                    }
+                }
+            }
         }
     }
 
@@ -341,8 +372,12 @@ public class VideoPlayer {
      * @param searchTerm
      */
     public void searchVideos(String searchTerm) {
-        LibrarySearcher librarySearcher = new LibrarySearcher();
-        ArrayList<Video> videos = librarySearcher.searchByTitle(searchTerm);
+        ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
+
+        videos = filterByTitle(videos, searchTerm);
+
+        videos= filterByFlagged(videos);
+
         if(videos.isEmpty()) {
             System.out.println("No search results for " + searchTerm);
         }
@@ -362,6 +397,66 @@ public class VideoPlayer {
     }
 
     /**
+     * Filter a list of videos based on if they are flagged
+     * @param videos
+     */
+    private ArrayList<Video> filterByFlagged(ArrayList<Video> videos) {
+        ArrayList<Video> filteredVideos = new ArrayList<>();
+
+        for(Video video: videos){
+            if(!video.isFlagged()){
+                filteredVideos.add(video);
+            }
+        }
+
+        return filteredVideos;
+    }
+
+    /**
+     * Filter a list of videos based on if their titles match the search term
+     * @param videos
+     * @param searchTerm
+     */
+    private ArrayList<Video> filterByTitle(ArrayList<Video> videos, String searchTerm) {
+        ArrayList<Video> filteredVideos = new ArrayList<>();
+
+        for(Video video: videos){
+            if(video.getTitle().toLowerCase().contains(searchTerm.toLowerCase())){
+                filteredVideos.add(video);
+            }
+        }
+
+        return filteredVideos;
+    }
+
+    /**
+     * Filter a list of videos based on if their tags match the search term
+     *
+     * @param videos
+     * @param searchTerm
+     */
+    private ArrayList<Video> filterByTag(ArrayList<Video> videos, String searchTerm) {
+        ArrayList<Video> filteredVideos = new ArrayList<>();
+
+        Boolean tagsMatch;
+        for (Video video : videos) {
+            tagsMatch = false;
+            List<String> tags = video.getTags();
+            for (String tag : tags) {
+                if (tag.toLowerCase().contains(searchTerm.toLowerCase())) {
+                    tagsMatch = true;
+                }
+            }
+            if (tagsMatch) {
+                filteredVideos.add(video);
+            }
+        }
+
+
+        return filteredVideos;
+    }
+
+    /**
      * Display all videos in the library whose titles contain the specified search term.
      *
      * Display a list in lexicographical order (by title) and ask the user if they’d like to play one of the
@@ -371,8 +466,12 @@ public class VideoPlayer {
      * @param videoTag
      */
     public void searchVideosWithTag(String videoTag) {
-        LibrarySearcher librarySearcher = new LibrarySearcher();
-        ArrayList<Video> videos = librarySearcher.searchByTag(videoTag);
+        ArrayList<Video> videos = (ArrayList<Video>) videoLibrary.getVideos();
+
+        videos = filterByTag(videos, videoTag);
+
+        videos= filterByFlagged(videos);
+
         if(videos.isEmpty() || !videoTag.contains("#")) {
             System.out.println("No search results for " + videoTag);
         }
@@ -421,15 +520,70 @@ public class VideoPlayer {
         }
     }
 
+    /**
+     * Used to flag a video when given no flag reason
+     * @param videoId
+     */
     public void flagVideo(String videoId) {
-        System.out.println("flagVideo needs implementation");
+        Video video = videoLibrary.getVideo(videoId);
+        if(video == null){
+            System.out.println("Cannot flag video: Video does not exist");
+        }
+        else {
+            if (video.isFlagged()) {
+                System.out.println("Cannot flag video: Video is already flagged");
+            } else {
+                if(videoPlaying.equalsIgnoreCase(video.getTitle())) {
+                    stopVideo();
+                }
+                video.flag();
+                System.out.println("Successfully flagged video: " + video.getTitle() + " (reason: " + video.getFlagReason() + ")");
+            }
+        }
     }
 
+    /**
+     * Used to flag a video with a given flag reason
+     * @param videoId
+     * @param reason
+     */
     public void flagVideo(String videoId, String reason) {
-        System.out.println("flagVideo needs implementation");
+        Video video = videoLibrary.getVideo(videoId);
+        if(video == null){
+            System.out.println("Cannot flag video: Video does not exist");
+        }
+        else {
+                if (video.isFlagged()) {
+                    System.out.println("Cannot flag video: Video is already flagged");
+                } else {
+                    if(videoPlaying.equalsIgnoreCase(video.getTitle())) {
+                        stopVideo();
+                    }
+                    video.flag(reason);
+                    System.out.println("Successfully flagged video: " + video.getTitle() + " (reason: " + video.getFlagReason() + ")");
+                }
+        }
     }
 
+    /**
+     * Attempts to allow (un-flag) a video.
+     * If a video doesn’t exist or is not currently flagged, display a warning message.
+     * @param videoId
+     */
     public void allowVideo(String videoId) {
-        System.out.println("allowVideo needs implementation");
+        Video video = videoLibrary.getVideo(videoId);
+        if(video == null){
+            System.out.println("Cannot remove flag from video: Video does not exist");
+        }
+        else{
+            if(video.isFlagged()){
+                video.clearFlag();
+                System.out.println("Successfully removed flag from video: "
+                        + video.getTitle());
+            }
+            else{
+                System.out.println("Cannot remove flag from video: Video is not flagged");
+            }
+        }
     }
 }
