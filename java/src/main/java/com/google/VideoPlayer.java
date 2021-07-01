@@ -11,8 +11,6 @@ public class VideoPlayer {
 
     private PlaylistManager playlistManager;
 
-    private LibrarySearcher librarySearcher;
-
     public VideoPlayer() {
         this.videoLibrary = new VideoLibrary();
 
@@ -20,8 +18,6 @@ public class VideoPlayer {
         videoPaused = false;
 
         playlistManager = new PlaylistManager();
-
-        librarySearcher = new LibrarySearcher();
     }
 
     public void numberOfVideos() {
